@@ -5,6 +5,7 @@ If a function gets defined once and could be used over and over, it'll go in her
 """
 import torch
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import numpy as np
 
 from torch import nn
@@ -35,8 +36,10 @@ def walk_through_dir(dir_path):
     for dirpath, dirnames, filenames in os.walk(dir_path):
         print(f"There are {len(dirnames)} directories and {len(filenames)} images in '{dirpath}'.")
 
-def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Tensor):
-    """Plots decision boundaries of model predicting on X in comparison to y.
+
+def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Tensor, h=800, w=800):
+    """
+    Plots decision boundaries of model predicting on X in comparison to y.
 
     Source - https://madewithml.com/courses/foundations/neural-networks/ (with modifications)
     """
@@ -65,10 +68,12 @@ def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Ten
 
     # Reshape preds and plot
     y_pred = y_pred.reshape(xx.shape).detach().numpy()
-    plt.contourf(xx, yy, y_pred, cmap=plt.cm.RdYlBu, alpha=0.7)
-    plt.scatter(X[:, 0], X[:, 1], c=y, s=40, cmap=plt.cm.RdYlBu)
-    plt.xlim(xx.min(), xx.max())
-    plt.ylim(yy.min(), yy.max())
+    
+    fig = go.Figure(layout={"height":h, "width": w})
+    fig.add_trace(go.Scatter(x=X[:, 0], y=X[:, 1], marker_color=y, mode="markers", marker_colorscale="rdylbu"))
+    fig.add_trace(go.Contour(x=xx[0, :], y=yy[:, 0], z=y_pred, colorscale="RdYlBu", opacity=0.3))
+
+    return fig
 
 
 # Plot linear data or training and test and predictions (optional)

@@ -76,28 +76,26 @@ def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Ten
     return fig
 
 
+
 # Plot linear data or training and test and predictions (optional)
-def plot_predictions(
-    train_data, train_labels, test_data, test_labels, predictions=None
-):
+def plot_predictions(train_data, train_labels, test_data, test_labels, predictions=None, h=600, w=None):
     """
-  Plots linear training data and test data and compares predictions.
-  """
-    plt.figure(figsize=(10, 7))
+    Plots linear training data and test data and compares predictions.
+    """
+
+    fig = go.Figure(layout={"height": h, "width": w})
 
     # Plot training data in blue
-    plt.scatter(train_data, train_labels, c="b", s=4, label="Training data")
-
+    fig.add_scatter(x=train_data.squeeze(), y=train_labels.squeeze(), mode="markers", marker_color="blue", marker_size=4, name="Training data")
+    
     # Plot test data in green
-    plt.scatter(test_data, test_labels, c="g", s=4, label="Testing data")
+    fig.add_scatter(x=test_data.squeeze(), y=test_labels.squeeze(), mode="markers", marker_color="green", marker_size=4, name="Testing data")
 
     if predictions is not None:
         # Plot the predictions in red (predictions were made on the test data)
-        plt.scatter(test_data, predictions, c="r", s=4, label="Predictions")
+        fig.add_scatter(x=test_data.squeeze(), y=predictions.squeeze(), mode="markers", marker_color="red", marker_size=4, name="Predictions")
 
-    # Show the legend
-    plt.legend(prop={"size": 14})
-
+    return fig
 
 # Calculate accuracy (a classification metric)
 def accuracy_fn(y_true, y_pred):

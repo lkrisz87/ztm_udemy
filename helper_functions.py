@@ -43,17 +43,19 @@ def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Ten
 
     Source - https://madewithml.com/courses/foundations/neural-networks/ (with modifications)
     """
-    # Put everything to CPU (works better with NumPy + Matplotlib)
-    model.to("cpu")
-    X, y = X.to("cpu"), y.to("cpu")
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    model.to(device)
+    X, y = X.to(device), y.to(device)
 
     # Setup prediction boundaries and grid
-    x_min, x_max = X[:, 0].min() - 0.1, X[:, 0].max() + 0.1
-    y_min, y_max = X[:, 1].min() - 0.1, X[:, 1].max() + 0.1
+    x_min, x_max = X[:, 0].min().item() - 0.1, X[:, 0].max().item() + 0.1
+    y_min, y_max = X[:, 1].min().item() - 0.1, X[:, 1].max().item() + 0.1
     xx, yy = np.meshgrid(np.linspace(x_min, x_max, 101), np.linspace(y_min, y_max, 101))
 
     # Make features
-    X_to_pred_on = torch.from_numpy(np.column_stack((xx.ravel(), yy.ravel()))).float()
+    X_to_pred_on = torch.from_numpy(np.column_stack((xx.ravel(), yy.ravel()))).float().to(device)
 
     # Make predictions
     model.eval()
@@ -67,11 +69,12 @@ def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Ten
         y_pred = torch.round(torch.sigmoid(y_logits))  # binary
 
     # Reshape preds and plot
-    y_pred = y_pred.reshape(xx.shape).detach().numpy()
+    _X = X.cpu().numpy()
+    _y_pred = y_pred.reshape(xx.shape).cpu().numpy()
     
     fig = go.Figure(layout={"height":h, "width": w})
-    fig.add_trace(go.Scatter(x=X[:, 0], y=X[:, 1], marker_color=y, mode="markers", marker_colorscale="rdylbu"))
-    fig.add_trace(go.Contour(x=xx[0, :], y=yy[:, 0], z=y_pred, colorscale="RdYlBu", opacity=0.3))
+    fig.add_trace(go.Scatter(x=_X[:, 0], y=_X[:, 1], marker_color=y.cpu(), mode="markers", marker_colorscale="rdylbu"))
+    fig.add_trace(go.Contour(x=xx[0, :], y=yy[:, 0], z=_y_pred, colorscale="RdYlBu", opacity=0.3))
 
     return fig
 

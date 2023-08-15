@@ -74,7 +74,7 @@ def plot_decision_boundary(model: torch.nn.Module, X: torch.Tensor, y: torch.Ten
     
     fig = go.Figure(layout={"height":h, "width": w})
     fig.add_trace(go.Scatter(x=_X[:, 0], y=_X[:, 1], marker_color=y.cpu(), mode="markers", marker_colorscale="rdylbu"))
-    fig.add_trace(go.Contour(x=xx[0, :], y=yy[:, 0], z=_y_pred, colorscale="RdYlBu", opacity=0.3))
+    fig.add_trace(go.Contour(x=xx[0, :], y=yy[:, 0], z=_y_pred, colorscale="RdYlBu", opacity=0.6))
 
     return fig
 

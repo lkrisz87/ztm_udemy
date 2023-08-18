@@ -1,5 +1,6 @@
 .venv/
 .vscode/
 03_pytorch_computer_vision/data
+04_pytorch_custom_datasets/data
 *.code-workspace
 *.pyc
